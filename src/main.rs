@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use std::time::{Duration, Instant, SystemTime};
+use std::time::Duration;
 use chrono::Utc;
 use redis::RedisError;
 use redis_ts::TsCommands;
@@ -80,7 +80,7 @@ async fn main() {
             let topic = String::from_utf8(packet.topic.to_vec()).unwrap();
             let payload = String::from_utf8(packet.payload.to_vec()).unwrap();
 
-            let json: serde_json::Value = serde_json::from_str(&payload).unwrap();
+            let json: Value = serde_json::from_str(&payload).unwrap();
 
             match config.topics.get(topic.as_str()) {
                 None => {}
@@ -93,7 +93,7 @@ async fn main() {
                                 let ts = Utc::now().timestamp_millis();
                                 let num_value = value.as_f64().unwrap();
                                 debug!("New value: {} {} {}", key, ts, num_value);
-                                let result: Result<_, RedisError> = connection.ts_add::<String, i64, f64, String>(key, ts, num_value);
+                                let _result: Result<_, RedisError> = connection.ts_add::<String, i64, f64, String>(key, ts, num_value);
                             }
                         }
                     }
